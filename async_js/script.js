@@ -94,6 +94,8 @@ const doCountries = function (country) {
 		})
 }
 
+// todo: add the promises to the global countries variable
+
 const fetchCountryData = async function (country, role) {
 	let url = `https://restcountries.eu/rest/v2/name/${country}`
 	if (role === 'neighbour') url = `https://restcountries.eu/rest/v2/alpha/${country}`
@@ -103,9 +105,27 @@ const fetchCountryData = async function (country, role) {
 			console.log(`got data: `, res)
 			let data = role === 'neighbour' ? res : res[0]
 			return data
-		});
+		})
+		.catch(err => console.log(`err: `, err));
 };
 
 // fetchCountryData('france')
 // fetchCountryData('usa')
-doCountries('usa')
+// function listenAndDisableOnClick (btn) {
+// }
+
+const disableAndReEnable = el => {
+	console.log(`disabling element`, )
+	el.setAttribute('disabled', '')
+	setTimeout(() => {
+		console.log(`re-enabling button`, )
+		el.removeAttribute('disabled')
+	}, 3000)
+}
+
+// listenAndDisableOnClick(btn)
+btn.addEventListener('click', function(){
+	// document.removeEventListener('click', this)
+	disableAndReEnable(btn)
+	doCountries('usa')
+})

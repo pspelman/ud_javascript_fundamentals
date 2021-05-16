@@ -84,14 +84,19 @@ function getCountryData(country) {
 const doCountries = function (country) {
 	fetchCountryData(country)
 		.then(data => {
-			renderCountry(data)
-			if (data.borders.length) {
-				for (let neighbor of data.borders) {
-					console.log(`getting `, neighbor)
-					fetchCountryData(neighbor, 'neighbour')
-						.then(data => renderCountry(data, 'neighbour'))
+			if (data) {
+				renderCountry(data)
+				if (data.borders.length) {
+					for (let neighbor of data.borders) {
+						console.log(`getting `, neighbor)
+						fetchCountryData(neighbor, 'neighbour')
+							.then(data => renderCountry(data, 'neighbour'))
+					}
 				}
 			}
+		})
+		.catch(err => {
+			renderError(`Error when getting country data: ${err.message}`)
 		})
 }
 
@@ -104,8 +109,11 @@ const fetchCountryData = async function (country, role) {
 		.then(res => res.json())
 		.then(function (res) {
 			console.log(`got data: `, res)
-			let data = role === 'neighbour' ? res : res[0]
-			return data
+			if (!res.ok) throw new Error(`The country '${country}' was not found`)
+			else {
+				let data = role === 'neighbour' ? res : res[0];
+				return data
+			}
 		})
 		.catch(err => {
 			console.log(`err: `, err)
@@ -134,5 +142,5 @@ const disableAndReEnable = el => {
 btn.addEventListener('click', function () {
 	// document.removeEventListener('click', this)
 	disableAndReEnable(btn)
-	doCountries('usa')
+	doCountries('nosuchcountry')
 })

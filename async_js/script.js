@@ -20,14 +20,14 @@ function renderCountry(data, className = '') {
         </article>
 	`
 	countriesContainer.insertAdjacentHTML('beforeend', html)
-	// countriesContainer.style.opacity = 1
+	countriesContainer.style.opacity = 1
 }
 
 const countries = {}
 
 function renderError(msg) {
 	countriesContainer.insertAdjacentText('beforeend', msg)
-	// countriesContainer.style.opacity = 1
+	countriesContainer.style.opacity = 1
 }
 
 function newCountryRequest(country) {
@@ -178,12 +178,12 @@ const wait = function(seconds) {
 	})
 }
 
-wait(2).then(() => {
-	console.log(`i waited for 2 seconds`, )
-	return wait(1)
-}).then(() => {
-	console.log(`i waited for another second`, )
-})
+// wait(2).then(() => {
+// 	console.log(`i waited for 2 seconds`, )
+// 	return wait(1)
+// }).then(() => {
+// 	console.log(`i waited for another second`, )
+// })
 
 
 const getPosition = function () {
@@ -195,23 +195,31 @@ const getPosition = function () {
 // NOTE: INTRODUCING ASYNC / AWAIT
 // start with a function declared with async
 const whereAmI = async function(country) {
+	console.log(`starting the location service...`, )
 
-	// Geolocation
-	const pos = await getPosition();
-	const { latitude: lat, longitude: lng } = pos.coords;
 
-	// Reverse geocoding API
-	const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-	const dataGeo = await resGeo.json()
-	console.log(`res geo: `, dataGeo)
+	try { // Geolocation
+		const pos = await getPosition();
+		const {latitude: lat, longitude: lng} = pos.coords;
 
-	// const res = await fetch(`https://restcountries.eu/rest/v2/name/${country}`)
-	const res = await fetch(`https://restcountries.eu/rest/v2/name/${dataGeo.country}`)
-	const data = await res.json()
-	console.log(`data: `, data)
-	renderCountry(data[0])  // assume it's not a neighbor country
-	countriesContainer.style.opacity = 1
+		// Reverse geocoding API
+		const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+		if (!resGeo.ok) throw new Error('Problem getting location data')
+		const dataGeo = await resGeo.json()
+		if (!dataGeo.ok) throw new Error('Problem with geo location data')
+		console.log(`res geo: `, dataGeo)
+
+		// const res = await fetch(`https://restcountries.eu/rest/v2/name/${country}`)
+		const res = await fetch(`https://restcountries.eu/rest/v2/name/${dataGeo.country}`)
+		const data = await res.json()
+		console.log(`data: `, data)
+		renderCountry(data[0])  // assume it's not a neighbor country
+	} catch (err) {
+		console.log(`error: `, err)
+		renderError(err)
+	}
 
 }
+
 
 whereAmI('france')

@@ -186,11 +186,27 @@ wait(2).then(() => {
 })
 
 
+const getPosition = function () {
+	return new Promise(function (resolve, reject) {
+		navigator.geolocation.getCurrentPosition(resolve, reject);
+	});
+};
 
 // NOTE: INTRODUCING ASYNC / AWAIT
 // start with a function declared with async
 const whereAmI = async function(country) {
-	const res = await fetch(`https://restcountries.eu/rest/v2/name/${country}`)
+
+	// Geolocation
+	const pos = await getPosition();
+	const { latitude: lat, longitude: lng } = pos.coords;
+
+	// Reverse geocoding API
+	const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+	const dataGeo = await resGeo.json()
+	console.log(`res geo: `, dataGeo)
+
+	// const res = await fetch(`https://restcountries.eu/rest/v2/name/${country}`)
+	const res = await fetch(`https://restcountries.eu/rest/v2/name/${dataGeo.country}`)
 	const data = await res.json()
 	console.log(`data: `, data)
 	renderCountry(data[0])  // assume it's not a neighbor country

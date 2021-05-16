@@ -101,19 +101,21 @@ const doCountries = function (country) {
 }
 
 // todo: add the promises to the global countries variable
+const getJSON = function (url, errorMsg='Something went wrong') {
+	return fetch(url)
+		.then(res => {
+			if (!res.ok) throw new Error(`${errorMsg} (${res.status})`)
+			return res.json()  // when the response is successful it will have a json() method (async)
+		})
+}
 
 const fetchCountryData = async function (country, role) {
 	let url = `https://restcountries.eu/rest/v2/name/${country}`
 	if (role === 'neighbour') url = `https://restcountries.eu/rest/v2/alpha/${country}`
-	return fetch(url)
-		.then(res => res.json())
+	return getJSON(url, `The country '${country}' was not found`)
 		.then(function (res) {
-			console.log(`got data: `, res)
-			if (!res.ok) throw new Error(`The country '${country}' was not found`)
-			else {
-				let data = role === 'neighbour' ? res : res[0];
-				return data
-			}
+			let data = role === 'neighbour' ? res : res[0];
+			return data
 		})
 		.catch(err => {
 			console.log(`err: `, err)

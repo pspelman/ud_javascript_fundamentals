@@ -79,14 +79,33 @@ function getCountryData(country) {
 // const request = fetch(`https://restcountries.eu/rest/v2/name/france`)
 // console.log(`request: `, request)
 
-const fetchCountryData = function (country) {
-	fetch(`https://restcountries.eu/rest/v2/name/${country}`)
+
+const doCountries = function (country) {
+	fetchCountryData(country)
+		.then(data => {
+			renderCountry(data)
+			if (data.borders.length){
+				for (let neighbor of data.borders){
+					console.log(`getting `, neighbor)
+					fetchCountryData(neighbor, 'neighbour')
+						.then(data => renderCountry(data, 'neighbour'))
+				}
+			}
+		})
+}
+
+const fetchCountryData = async function (country, role) {
+	let url = `https://restcountries.eu/rest/v2/name/${country}`
+	if (role === 'neighbour') url = `https://restcountries.eu/rest/v2/alpha/${country}`
+	return fetch(url)
+		.then(res => res.json())
 		.then(function (res) {
-			return res.json()
-		}).then(function(data) {
-		console.log(`data: `, data)
-		renderCountry(data[0])
-	})
+			console.log(`got data: `, res)
+			let data = role === 'neighbour' ? res : res[0]
+			return data
+		});
 };
 
-fetchCountryData('france')
+// fetchCountryData('france')
+// fetchCountryData('usa')
+doCountries('usa')

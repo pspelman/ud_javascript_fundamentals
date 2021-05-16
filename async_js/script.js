@@ -6,7 +6,7 @@ const countriesContainer = document.querySelector('.countries');
 ///////////////////////////////////////
 
 
-function renderCountry(data, className='') {
+function renderCountry(data, className = '') {
 	const html = `
 	        <article class="country ${className}">
           <img class="country__img" src=${data.flag} />
@@ -23,9 +23,7 @@ function renderCountry(data, className='') {
 	countriesContainer.style.opacity = 1
 }
 
-const countries = {
-
-}
+const countries = {}
 
 function getCountries(country) {
 
@@ -38,6 +36,7 @@ function newCountryRequest(country) {
 	request.send()  // note this will SEND the request, this will fetch in the background and emit the LOAD event when it is done
 	return request;
 }
+
 function newCountryRequestByAlpha(neighbor) {
 	const request = new XMLHttpRequest()
 	// open it with the intended URL
@@ -74,4 +73,20 @@ function getCountryData(country) {
 }
 
 // getCountryData('usa');
-getCountryData('portugal');
+// getCountryData('portugal');
+
+// const request = fetch(`https://restcountries.eu/rest/v2/name/${country}`)
+// const request = fetch(`https://restcountries.eu/rest/v2/name/france`)
+// console.log(`request: `, request)
+
+const fetchCountryData = function (country) {
+	fetch(`https://restcountries.eu/rest/v2/name/${country}`)
+		.then(function (res) {
+			return res.json()
+		}).then(function(data) {
+		console.log(`data: `, data)
+		renderCountry(data[0])
+	})
+};
+
+fetchCountryData('france')

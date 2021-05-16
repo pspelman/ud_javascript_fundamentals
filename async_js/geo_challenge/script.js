@@ -185,17 +185,3 @@ wait(2).then(() => {
 	console.log(`i waited for another second`, )
 })
 
-
-
-// NOTE: INTRODUCING ASYNC / AWAIT
-// start with a function declared with async
-const whereAmI = async function(country) {
-	const res = await fetch(`https://restcountries.eu/rest/v2/name/${country}`)
-	const data = await res.json()
-	console.log(`data: `, data)
-	renderCountry(data[0])  // assume it's not a neighbor country
-	countriesContainer.style.opacity = 1
-
-}
-
-whereAmI('france')

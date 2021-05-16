@@ -20,13 +20,14 @@ function renderCountry(data, className = '') {
         </article>
 	`
 	countriesContainer.insertAdjacentHTML('beforeend', html)
-	countriesContainer.style.opacity = 1
+	// countriesContainer.style.opacity = 1
 }
 
 const countries = {}
 
-function getCountries(country) {
-
+function renderError(msg) {
+	countriesContainer.insertAdjacentText('beforeend', msg)
+	// countriesContainer.style.opacity = 1
 }
 
 function newCountryRequest(country) {
@@ -84,8 +85,8 @@ const doCountries = function (country) {
 	fetchCountryData(country)
 		.then(data => {
 			renderCountry(data)
-			if (data.borders.length){
-				for (let neighbor of data.borders){
+			if (data.borders.length) {
+				for (let neighbor of data.borders) {
 					console.log(`getting `, neighbor)
 					fetchCountryData(neighbor, 'neighbour')
 						.then(data => renderCountry(data, 'neighbour'))
@@ -106,7 +107,13 @@ const fetchCountryData = async function (country, role) {
 			let data = role === 'neighbour' ? res : res[0]
 			return data
 		})
-		.catch(err => console.log(`err: `, err));
+		.catch(err => {
+			console.log(`err: `, err)
+			renderError(`Error when getting country data: ${err.message}`)
+		})
+		.finally(() => {
+			countriesContainer.style.opacity = 1
+		})
 };
 
 // fetchCountryData('france')
@@ -115,16 +122,16 @@ const fetchCountryData = async function (country, role) {
 // }
 
 const disableAndReEnable = el => {
-	console.log(`disabling element`, )
+	console.log(`disabling element`,)
 	el.setAttribute('disabled', '')
 	setTimeout(() => {
-		console.log(`re-enabling button`, )
+		console.log(`re-enabling button`,)
 		el.removeAttribute('disabled')
 	}, 3000)
 }
 
 // listenAndDisableOnClick(btn)
-btn.addEventListener('click', function(){
+btn.addEventListener('click', function () {
 	// document.removeEventListener('click', this)
 	disableAndReEnable(btn)
 	doCountries('usa')

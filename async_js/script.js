@@ -222,4 +222,37 @@ const whereAmI = async function(country) {
 }
 
 
-whereAmI('france')
+// whereAmI('france')
+
+// whereAmI()
+// 	.then(city => console.log(`2: ${city}`, ))
+// 	.catch(err => console.log(`2: ${err.message}`, ))
+// 	.finally(() => console.log(`3: Finished getting location`))
+//
+// 	(async function() {
+// 		try {
+//
+// 		} catch (err){
+// 			console.log(err => console.log(`2: ${err.message}`, ))
+//
+// 		}
+//
+// 	})
+
+// whereAmI('france')
+
+// whereAmI()
+// 	.then(city => console.log(`2: ${city}`, ))
+// 	.catch(err => console.log(`2: ${err.message}`, ))
+// 	.finally(() => console.log(`3: Finished getting location`))
+//
+
+(async function () {
+	try {
+		const city = await whereAmI()
+		console.log(`2: ${city}`,)
+	} catch (err) {
+		console.log(`2: ${err.message}`)
+	}
+	console.log(`3: Finished getting location`,)
+})()

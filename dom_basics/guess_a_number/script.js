@@ -1,23 +1,44 @@
 'use strict';
 
-
 console.log(``, document.querySelector('.message').textContent)
-// start by generating the target number 1-20
-let score = 20
-const secretNumber = Math.trunc(Math.random() * 20) + 1
+const gameScore = () => document.querySelector('.score')
+const guessInput = () => document.querySelector('.guess')
+
+let _score, secretNumber
+
 
 function updateMessage(message) {
 	document.querySelector('.message').textContent = message
 }
 
 function updateScore(delta) {
-	score += delta
-	if (score <= 0) {
+	_score += delta
+	if (_score <= 0) {
 		updateMessage('YOU LOSE --> start a new game to try again')
-		document.querySelector('.check').addEventListener('click', ()=>{alert('start a new game to play again')})
+		gameScore().textContent = "0000"
+		document.querySelector('.check').textContent = 'New Game'
+		document.querySelector('.check').addEventListener('click', () => {
+			startGame(2)
+			document.querySelector('.check').textContent = 'Check!'
+		})
 	} else {
-		document.querySelector('.score').textContent = score;
+		gameScore().textContent = _score
+		// document.querySelector('.score').textContent = score;
 	}
+}
+
+
+function startGame(startingPoints = 2) {
+	console.log(`starting new game with ${startingPoints} guesses`,)
+	_score = startingPoints
+
+	gameScore().textContent = `${startingPoints}`
+
+	// start by generating the target number 1-20
+	secretNumber = Math.trunc(Math.random() * 20) + 1
+	document.querySelector('.check').addEventListener('click', onGuessCheck)
+	guessInput().value = ''
+	guessInput().addEventListener('keypress', (e) => e.key === 'Enter' ? onGuessCheck() : null)
 }
 
 let onGuessCheck = function () {
@@ -35,5 +56,10 @@ let onGuessCheck = function () {
 		updateScore(-1)
 	}
 };
-document.querySelector('.check').addEventListener('click', onGuessCheck)
-document.querySelector('.guess').addEventListener('keypress', (e) => e.key === 'Enter' ? onGuessCheck() : null)
+
+document.addEventListener('readystatechange', () => {
+	if (document.readyState === 'complete') {
+		startGame(2)
+	}
+})
+

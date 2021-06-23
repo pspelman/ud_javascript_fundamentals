@@ -4,7 +4,7 @@ console.log(``, document.querySelector('.message').textContent)
 const gameScore = () => document.querySelector('.score')
 const guessInput = () => document.querySelector('.guess')
 
-let _score, secretNumber, highScore, controller, signal
+let _score, secretNumber, highScore, controller, signal, gameOn = false
 controller = new AbortController()
 signal = controller.signal
 
@@ -24,41 +24,43 @@ function updateScore(delta) {
 }
 
 function endGame(win) {
-	controller.abort()
+	gameOn = false
 	if (win) {
 		if (!highScore) highScore = _score
 		else {
-			console.log(`checking ${_score} against high score ${highScore}`,)
 			if (_score > highScore) {
-				console.log(` new high score! `,)
 				highScore = _score
 			}
 		}
+		document.querySelector('.highscore').textContent = highScore
 	} else {
 		updateMessage('YOU LOSE --> start a new game to try again')
-
 		gameScore().textContent = "0000"
 	}
+	controller.abort()
 	controller = new AbortController()
 	signal = controller.signal
 
 	guessInput().value = ''
 	document.querySelector('.check').textContent = 'New Game'
 	document.querySelector('.check').addEventListener('click', () => {
-			startGame(2)
+			if (!gameOn) startGame()
 		}, {once: true}
 	)
-	guessInput().addEventListener('keypress', (e) => e.key === 'Enter' ? startGame() : null,
-		{once: true})
-
+	guessInput().addEventListener('keypress', function (e) {
+		if (!gameOn) e.key === 'Enter' ? startGame() : null
+	})
 }
 
 
-function startGame(startingPoints = 2) {
+function startGame(startingPoints = 5) {
+	_score = startingPoints
+	gameOn = true
 	console.log(`starting new game with ${startingPoints} guesses`,)
 	_score = startingPoints
 
 	gameScore().textContent = `${startingPoints}`
+	updateMessage('Guess a NUMBER!');
 
 	// start by generating the target number 1-20
 	secretNumber = Math.trunc(Math.random() * 20) + 1
@@ -78,7 +80,7 @@ let onGuessCheck = function () {
 	} else if (guess === secretNumber) {
 		console.log(`YOU WIN`,)
 		updateMessage('Correct Number!')
-		updateScore(+1)
+		updateScore(0)
 		endGame(true)
 	} else if (guess > secretNumber) {
 		updateMessage('Too High')
@@ -91,7 +93,7 @@ let onGuessCheck = function () {
 
 document.addEventListener('readystatechange', () => {
 	if (document.readyState === 'complete') {
-		startGame(2)
+		startGame()
 	}
 })
 
